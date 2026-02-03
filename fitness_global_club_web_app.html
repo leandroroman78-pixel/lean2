@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitness Global Club</title>
+  <link rel="manifest" href="manifest.json" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="text-white min-h-screen bg-cover bg-center" style="background-image:linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),url('https://images.unsplash.com/photo-1554284126-aa88f22d8b74?auto=format&fit=crop&w=1600&q=80');">
+
+<header class="p-10 text-center bg-black/70 backdrop-blur-md">
+  <h1 class="text-4xl font-bold text-green-400">Fitness Global Club</h1>
+  <p class="text-gray-400 mt-2">Entrená desde cualquier parte del mundo</p>
+</header>
+
+<section class="p-12 max-w-6xl mx-auto bg-black/60 rounded-2xl backdrop-blur-lg shadow-2xl mt-10">
+  <h2 class="text-2xl text-green-400 mb-6 text-center">Planes Mensuales</h2>
+
+  <div class="grid md:grid-cols-3 gap-8">
+    <div class="bg-gradient-to-b from-gray-900 to-black p-8 rounded-2xl text-center shadow-xl hover:scale-105 transition">
+      <h3 class="text-xl font-bold mb-2">Básico</h3>
+      <p class="text-3xl text-green-400 mb-4">USD 7</p>
+      <button onclick="subscribe('basico')" class="bg-green-400 hover:bg-green-500 text-black px-6 py-3 rounded-full font-bold tracking-wide shadow-lg">Suscribirse</button>
+    </div>
+
+    <div class="bg-gradient-to-b from-gray-900 to-black p-8 rounded-2xl text-center shadow-2xl border-2 border-green-400 scale-105">
+      <h3 class="text-xl font-bold mb-2">Pro</h3>
+      <p class="text-3xl text-green-400 mb-4">USD 12</p>
+      <button onclick="subscribe('pro')" class="bg-green-400 hover:bg-green-500 text-black px-6 py-3 rounded-full font-bold tracking-wide shadow-lg">Suscribirse</button>
+    </div>
+
+    <div class="bg-gradient-to-b from-gray-900 to-black p-8 rounded-2xl text-center shadow-xl hover:scale-105 transition">
+      <h3 class="text-xl font-bold mb-2">Elite</h3>
+      <p class="text-3xl text-green-400 mb-4">USD 25</p>
+      <button onclick="subscribe('elite')" class="bg-green-400 hover:bg-green-500 text-black px-6 py-3 rounded-full font-bold tracking-wide shadow-lg">Suscribirse</button>
+    </div>
+  </div>
+</section>
+
+<div id="lockScreen" class="fixed inset-0 bg-black/90 flex items-center justify-center hidden z-50">
+  <div class="text-center max-w-md">
+    <h2 class="text-3xl text-green-400 mb-4">Planes bloqueados</h2>
+    <p class="mb-6 text-gray-300">Podés explorar la web libremente, pero necesitás una suscripción para acceder a los planes de entrenamiento.</p>
+    <a href="#" class="bg-green-500 text-black px-6 py-3 rounded font-bold">Ver planes</a>
+  </div>
+</div>
+</div>
+
+<script>
+const links = {
+  basico: "https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=PLAN_BASICO_ID",
+  pro: "https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=PLAN_PRO_ID",
+  elite: "https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=PLAN_ELITE_ID"
+};
+
+function subscribe(plan){
+  window.location.href = links[plan];
+}
+
+async function verifyAccess(){
+  const session = JSON.parse(localStorage.getItem('session'));
+
+  if(!session){
+    // Usuario sin pagar: puede navegar la web, pero no acceder a planes
+    document.querySelectorAll('.plan-content').forEach(el=>el.classList.add('blur-sm'));
+    return;
+  }
+
+  const res = await fetch(`https://TU_DOMINIO/api/user/status?email=${session.email}`);
+  const data = await res.json();
+
+  if(!data.active){
+    document.querySelectorAll('.plan-content').forEach(el=>el.classList.add('blur-sm'));
+    document.getElementById('lockScreen').classList.remove('hidden');
+  }
+}
+
+  const res = await fetch(`https://TU_DOMINIO/api/user/status?email=${session.email}`);
+  const data = await res.json();
+  if(!data.active){
+    document.getElementById('lockScreen').classList.remove('hidden');
+  }
+}
+
+verifyAccess();
+</script>
+
+</body>
+</html>
